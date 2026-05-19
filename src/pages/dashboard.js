@@ -1,20 +1,30 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import BottomTabBar from '../components/BottomTabBar';
+import AppHeader from '../components/AppHeader';
 import { colors, spacing, radius } from '../styles/global';
 
 export default function Dashboard() {
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.title}>Olá, Aluno!</Text>
+    <SafeAreaView style={styles.screen}>
+      <AppHeader />
+      <View style={styles.container}>
+        <View style={styles.card}>
+        </View>
       </View>
-    </View>
+
+      <BottomTabBar />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+
+  container: {
+    flex: 1,
     padding: spacing.lg,
   },
 
