@@ -1,0 +1,206 @@
+COMO USAR OS COMPONENTES
+========================
+
+Esta pasta tem componentes reutilizaveis do app mobile.
+Eles servem para evitar repetir o mesmo visual em varias telas.
+
+Para usar qualquer componente:
+1. Importe no topo da pagina.
+2. Chame o componente dentro do return.
+
+
+1. AppHeader
+------------
+Cabecalho do app com logo, sino e perfil.
+
+Import:
+import AppHeader from '../components/AppHeader';
+
+Uso:
+<AppHeader />
+
+
+2. BottomTabBar
+---------------
+Menu inferior com icones de home, submissao, adicionar, notificacoes e perfil.
+Por enquanto ele e visual. A navegacao sera ligada depois.
+
+Import:
+import BottomTabBar from '../components/BottomTabBar';
+
+Uso:
+<BottomTabBar />
+
+
+3. PageTitle
+------------
+Titulo da pagina. Pode ter seta de voltar.
+
+Import:
+import PageTitle from '../components/PageTitle';
+
+Uso simples:
+<PageTitle title="Minhas submissoes" />
+
+Uso com voltar:
+<PageTitle
+  title="Detalhes da submissao"
+  showBack={true}
+  onBack={() => console.log('Voltar')}
+/>
+
+
+4. PrimaryButton
+----------------
+Botao principal azul.
+
+Import:
+import PrimaryButton from '../components/PrimaryButton';
+
+Uso:
+<PrimaryButton
+  title="Enviar Submissao"
+  onPress={() => console.log('Enviar')}
+/>
+
+
+5. SecondaryButton
+------------------
+Botao secundario branco com borda.
+
+Import:
+import SecondaryButton from '../components/SecondaryButton';
+
+Uso:
+<SecondaryButton
+  title="Alterar Senha"
+  onPress={() => console.log('Alterar senha')}
+/>
+
+
+6. StatusBadge
+--------------
+Etiqueta de status: Aprovado, Pendente, Rejeitado/Reprovado.
+
+Import:
+import StatusBadge from '../components/StatusBadge';
+
+Uso:
+<StatusBadge status="Aprovado" />
+<StatusBadge status="Pendente" />
+<StatusBadge status="Rejeitado" />
+
+
+7. InfoCard
+-----------
+Card branco com sombra para agrupar informacoes.
+Tudo que ficar dentro dele aparece dentro do card.
+
+Import:
+import InfoCard from '../components/InfoCard';
+
+Uso:
+<InfoCard>
+  <Text>Curso</Text>
+  <Text>Analise e Desenvolvimento de Sistemas</Text>
+</InfoCard>
+
+Observacao:
+Se usar Text dentro da pagina, lembre de importar:
+import { Text } from 'react-native';
+
+
+8. InputField
+-------------
+Campo de texto para e-mail, senha, busca, matricula etc.
+
+Import:
+import InputField from '../components/InputField';
+
+Uso com estado:
+const [email, setEmail] = useState('');
+
+<InputField
+  label="E-mail"
+  placeholder="Digite seu e-mail"
+  value={email}
+  onChangeText={setEmail}
+  icon="mail"
+/>
+
+Uso para senha:
+<InputField
+  label="Senha"
+  placeholder="Digite sua senha"
+  value={senha}
+  onChangeText={setSenha}
+  icon="lock-closed"
+  secureTextEntry={true}
+/>
+
+Observacao:
+Se usar useState, importe:
+import { useState } from 'react';
+
+
+9. SubmissionCard
+-----------------
+Card usado para mostrar uma submissao na lista.
+
+Import:
+import SubmissionCard from '../components/SubmissionCard';
+
+Uso:
+<SubmissionCard
+  title="Curso de Extensao - IA na Educacao"
+  subtitle="Enviado em 24/04/2026"
+  date="10h aprovadas"
+  status="Aprovado"
+  onPress={() => console.log('Abrir detalhes')}
+/>
+
+
+Exemplo de tela usando varios componentes
+-----------------------------------------
+
+import { SafeAreaView, StyleSheet, View } from 'react-native';
+import AppHeader from '../components/AppHeader';
+import BottomTabBar from '../components/BottomTabBar';
+import PageTitle from '../components/PageTitle';
+import InfoCard from '../components/InfoCard';
+import PrimaryButton from '../components/PrimaryButton';
+import { colors, spacing } from '../styles/global';
+
+export default function MinhaPagina() {
+  return (
+    <SafeAreaView style={styles.screen}>
+      <AppHeader />
+
+      <View style={styles.content}>
+        <PageTitle title="Minha pagina" />
+
+        <InfoCard>
+          <PrimaryButton
+            title="Clique aqui"
+            onPress={() => console.log('Clicou')}
+          />
+        </InfoCard>
+      </View>
+
+      <BottomTabBar />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+
+  content: {
+    flex: 1,
+    padding: spacing.lg,
+  },
+});
+
