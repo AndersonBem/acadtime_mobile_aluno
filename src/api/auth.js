@@ -1,0 +1,42 @@
+import { apiRequest, setAccessToken } from './client';
+import { clearSession, getSavedToken, getSavedUser, saveSession } from './tokenStorage';
+
+export async function login(email, senha) {
+  const data = await apiRequest('/login/', {
+    method: 'POST',
+    body: JSON.stringify({ email, senha }),
+  });
+
+  setAccessToken(data.access);
+  await saveSession(data);
+
+  return data;
+}
+
+export async function restoreSession() {
+  const token = await getSavedToken();
+  const usuario = await getSavedUser();
+
+  if (!token || !usuario) {
+    return null;
+  }
+
+  setAccessToken(token);
+
+  return {
+    access: token,
+    usuario,
+  };
+}
+
+export async function logout() {
+  setAccessToken(null);
+  await clearSession();
+}
+
+export function recuperarSenha(email) {
+  return apiRequest('/recuperar-senha/', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+}
