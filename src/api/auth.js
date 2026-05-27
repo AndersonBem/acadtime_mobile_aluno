@@ -7,6 +7,12 @@ export async function login(email, senha) {
     body: JSON.stringify({ email, senha }),
   });
 
+  if (data.usuario?.tipo !== 'aluno') {
+    throw {
+      detail: 'Este aplicativo é exclusivo para alunos.',
+    };
+  }
+
   setAccessToken(data.access);
   await saveSession(data);
 
@@ -18,6 +24,12 @@ export async function restoreSession() {
   const usuario = await getSavedUser();
 
   if (!token || !usuario) {
+    return null;
+  }
+
+  if (usuario.tipo !== 'aluno') {
+    await clearSession();
+    setAccessToken(null);
     return null;
   }
 
