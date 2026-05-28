@@ -12,24 +12,52 @@ Para usar qualquer componente:
 1. AppHeader
 ------------
 Cabecalho do app com logo, sino e perfil.
+O sino e o perfil podem navegar para outras telas.
+Se receber photoUrl, mostra a foto do aluno. Se nao receber, mostra o icone padrao.
 
 Import:
 import AppHeader from '../components/AppHeader';
 
 Uso:
-<AppHeader />
+<AppHeader
+  photoUrl={dashboard.aluno?.foto_perfil_url}
+  onPressNotifications={() => navigation.navigate('Notifications')}
+  onPressProfile={() => navigation.navigate('Profile')}
+/>
+
+Props:
+- photoUrl: URL da foto do aluno. Opcional.
+- onPressNotifications: funcao chamada ao tocar no sino.
+- onPressProfile: funcao chamada ao tocar no perfil.
 
 
 2. BottomTabBar
 ---------------
 Menu inferior com icones de home, submissao, adicionar, notificacoes e perfil.
-Por enquanto ele e visual. A navegacao sera ligada depois.
+Ele ja esta preparado para navegacao.
 
 Import:
 import BottomTabBar from '../components/BottomTabBar';
 
 Uso:
-<BottomTabBar />
+<BottomTabBar
+  activeRoute="Dashboard"
+  onNavigate={(screen) => navigation.navigate(screen)}
+/>
+
+Props:
+- activeRoute: nome da rota ativa. Exemplo: Dashboard, Submissions, NewSubmission, Notifications, Profile.
+- onNavigate: funcao chamada quando o usuario toca em um item do menu.
+
+Rotas usadas pelo BottomTabBar:
+- Dashboard
+- Submissions
+- NewSubmission
+- Notifications
+- Profile
+
+Importante:
+Essas rotas precisam existir no Routes.js para que navigation.navigate(screen) funcione.
 
 
 3. PageTitle
@@ -160,6 +188,45 @@ Uso:
 />
 
 
+10. DashboardMetricCard
+-----------------------
+Card pequeno usado no Dashboard para exibir um numero e um rotulo.
+
+Import:
+import DashboardMetricCard from '../components/DashboardMetricCard';
+
+Uso:
+<DashboardMetricCard
+  icon="time-outline"
+  value={60}
+  label="Horas aprovadas"
+  color={colors.primary}
+  backgroundColor="#e8f1fb"
+/>
+
+
+11. ProgressRow
+---------------
+Linha de progresso usada no Dashboard para mostrar horas por tipo de atividade.
+
+Import:
+import ProgressRow from '../components/ProgressRow';
+
+Uso:
+<ProgressRow
+  icon="document-text-outline"
+  title="Curso de Extensao"
+  current={10}
+  total={20}
+  percent={50}
+  color={colors.primary}
+  backgroundColor="#e8f1fb"
+/>
+
+Observacao:
+O percent deve ficar entre 0 e 100 para a barra nao ultrapassar o limite.
+
+
 Exemplo de tela usando varios componentes
 -----------------------------------------
 
@@ -174,7 +241,10 @@ import { colors, spacing } from '../styles/global';
 export default function MinhaPagina() {
   return (
     <SafeAreaView style={styles.screen}>
-      <AppHeader />
+      <AppHeader
+        onPressNotifications={() => navigation.navigate('Notifications')}
+        onPressProfile={() => navigation.navigate('Profile')}
+      />
 
       <View style={styles.content}>
         <PageTitle title="Minha pagina" />
@@ -187,7 +257,10 @@ export default function MinhaPagina() {
         </InfoCard>
       </View>
 
-      <BottomTabBar />
+      <BottomTabBar
+        activeRoute="Dashboard"
+        onNavigate={(screen) => navigation.navigate(screen)}
+      />
     </SafeAreaView>
   );
 }

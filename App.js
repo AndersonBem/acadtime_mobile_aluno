@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import Dashboard from './src/pages/dashboard';
+import Routes from './src/navigation/Routes';
 
 export default function App() {
   return (
     <>
-      <Dashboard />
+      <Routes />
       <StatusBar hidden />
     </>
   );

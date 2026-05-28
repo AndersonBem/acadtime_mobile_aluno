@@ -2,28 +2,65 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../styles/global';
 
-export default function BottomTabBar() {
+const tabs = [
+  {
+    key: 'Dashboard',
+    icon: 'home',
+  },
+  {
+    key: 'Submissions',
+    icon: 'document-text-outline',
+  },
+  {
+    key: 'NewSubmission',
+    icon: 'add',
+    center: true,
+  },
+  {
+    key: 'Notifications',
+    icon: 'notifications-outline',
+  },
+  {
+    key: 'Profile',
+    icon: 'person-outline',
+  },
+];
+
+export default function BottomTabBar({ activeRoute = 'Dashboard', onNavigate }) {
+  function handlePress(tab) {
+    if (!onNavigate) {
+      return;
+    }
+
+    onNavigate(tab.key);
+  }
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button}>
-        <Ionicons name="home" size={24} color={colors.primary} />
-      </TouchableOpacity>
+      {tabs.map((tab) => {
+        const isActive = activeRoute === tab.key;
 
-      <TouchableOpacity style={styles.button}>
-        <Ionicons name="document-text-outline" size={24} color={colors.text} />
-      </TouchableOpacity>
+        const iconColor = tab.center
+          ? colors.surface
+          : isActive
+            ? colors.primary
+            : colors.text;
 
-      <TouchableOpacity style={styles.centerButton}>
-        <Ionicons name="add" size={28} color={colors.surface} />
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button}>
-        <Ionicons name="notifications-outline" size={24} color={colors.text} />
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button}>
-        <Ionicons name="person-outline" size={24} color={colors.text} />
-      </TouchableOpacity>
+        return (
+          <TouchableOpacity
+            key={tab.key}
+            style={tab.center ? styles.centerButton : styles.button}
+            onPress={() => handlePress(tab)}
+            activeOpacity={0.8}
+          >
+            <Ionicons
+              name={tab.icon}
+              size={tab.center ? 28 : 24}
+              color={iconColor}
+            />
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }
