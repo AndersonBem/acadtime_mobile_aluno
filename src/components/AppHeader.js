@@ -1,8 +1,12 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing } from '../styles/global';
 
-export default function AppHeader() {
+export default function AppHeader({
+  photoUrl,
+  onPressNotifications,
+  onPressProfile,
+}) {
   return (
     <View style={styles.container}>
       <View style={styles.logoArea}>
@@ -13,12 +17,27 @@ export default function AppHeader() {
       </View>
 
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.iconButton}>
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={onPressNotifications}
+          activeOpacity={0.8}
+        >
           <Ionicons name="notifications-outline" size={24} color={colors.text} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.profileButton}>
-          <Ionicons name="person-outline" size={24} color={colors.text} />
+        <TouchableOpacity
+          style={styles.profileButton}
+          onPress={onPressProfile}
+          activeOpacity={0.8}
+        >
+          {photoUrl ? (
+            <Image
+              source={{ uri: photoUrl }}
+              style={styles.profileImage}
+            />
+          ) : (
+            <Ionicons name="person-outline" size={24} color={colors.text} />
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -35,7 +54,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
 
-    marginTop: 15, 
+    marginTop: 15,
   },
 
   logoArea: {
@@ -73,5 +92,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
 
     marginLeft: spacing.sm,
+    overflow: 'hidden',
+  },
+
+  profileImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
 });

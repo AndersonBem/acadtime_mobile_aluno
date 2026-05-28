@@ -1,0 +1,116 @@
+CONTEXTS DO APP MOBILE
+
+Esta pasta guarda estados globais pequenos que precisam ser compartilhados entre
+varias telas do app.
+
+No momento temos:
+
+- CursoContext.js
+
+
+POR QUE O CURSOCONTEXT EXISTE
+
+O aluno pode estar matriculado em mais de um curso. Quando ele escolhe um curso
+no Dashboard, outras telas tambem precisam saber qual curso esta selecionado.
+
+Exemplos:
+
+- Dashboard deve mostrar horas e progresso do curso selecionado.
+- Minhas submissoes pode filtrar submissoes pelo curso selecionado.
+- Nova submissao deve enviar a atividade para o curso selecionado.
+- Notificacoes ou Perfil podem usar o mesmo curso como referencia, se necessario.
+
+Se cada tela guardasse seu proprio curso, o app ficaria inconsistente:
+o Dashboard poderia estar em um curso e a tela de submissao em outro.
+
+Por isso usamos um contexto global.
+
+
+COMO O CURSOCONTEXT FUNCIONA
+
+O CursoContext guarda:
+
+- cursoSelecionado
+- setCursoSelecionado
+
+cursoSelecionado:
+Curso atualmente escolhido pelo aluno.
+
+setCursoSelecionado:
+Funcao usada para trocar o curso global.
+
+
+COMO USAR EM UMA TELA
+
+Importe o hook:
+
+import { useCurso } from '../contexts/CursoContext';
+
+Dentro do componente:
+
+const { cursoSelecionado, setCursoSelecionado } = useCurso();
+
+Para ler o curso atual:
+
+console.log(cursoSelecionado);
+
+Para trocar o curso:
+
+setCursoSelecionado(curso);
+
+
+EXEMPLO
+
+import { Text, TouchableOpacity, View } from 'react-native';
+import { useCurso } from '../contexts/CursoContext';
+
+export default function MinhaTela() {
+  const { cursoSelecionado, setCursoSelecionado } = useCurso();
+
+  return (
+    <View>
+      <Text>
+        Curso atual: {cursoSelecionado?.nome || 'Nenhum curso selecionado'}
+      </Text>
+
+      <TouchableOpacity
+        onPress={() => setCursoSelecionado({ id: 1, nome: 'ADS' })}
+      >
+        <Text>Selecionar ADS</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+
+REGRA IMPORTANTE
+
+useCurso() so funciona em telas que estao dentro do CursoProvider.
+
+O CursoProvider deve envolver as rotas logadas em:
+
+src/navigation/Routes.js
+
+Se uma tela usar useCurso fora do provider, o app vai mostrar o erro:
+
+"useCurso deve ser usado dentro de um CursoProvider."
+
+
+QUANDO CRIAR OUTRO CONTEXT
+
+Crie outro context apenas quando o mesmo estado precisar ser usado por varias
+telas.
+
+Nao crie context para estado que pertence a uma tela so.
+
+Exemplos bons para context:
+
+- sessao do usuario
+- curso selecionado
+- tema visual global
+
+Exemplos que nao precisam de context:
+
+- texto digitado em um input especifico
+- loading de uma tela especifica
+- modal aberto/fechado de uma unica tela
