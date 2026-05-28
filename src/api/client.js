@@ -29,7 +29,7 @@ export async function apiRequest(path, options = {}) {
     const data = text ? JSON.parse(text) : null;
 
     if (!response.ok) {
-        throw data || { detal: 'Erro na requisição.'};
+        throw data || { detail: 'Erro na requisição.'};
     }
 
     return data
