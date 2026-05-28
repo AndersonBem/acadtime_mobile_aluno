@@ -1,5 +1,10 @@
 import { apiRequest, setAccessToken } from './client';
-import { clearSession, getSavedToken, getSavedUser, saveSession } from './tokenStorage';
+import {
+  clearSession,
+  getSavedToken,
+  getSavedUser,
+  saveSession,
+} from './tokenStorage';
 
 export async function login(email, senha) {
   const data = await apiRequest('/login/', {
@@ -35,10 +40,18 @@ export async function restoreSession() {
 
   setAccessToken(token);
 
-  return {
-    access: token,
-    usuario,
-  };
+  try {
+    await apiRequest('/aluno/');
+
+    return {
+      access: token,
+      usuario,
+    };
+  } catch (error) {
+    await clearSession();
+    setAccessToken(null);
+    return null;
+  }
 }
 
 export async function logout() {
