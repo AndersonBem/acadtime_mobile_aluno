@@ -1,12 +1,7 @@
 import { apiRequest } from './client';
 
-
 export function listarTiposAtividade() {
   return apiRequest('/tipoAtividade/');
-}
-
-export function listarAtividadesComplementares() {
-  return apiRequest('/atividadeComplementar/');
 }
 
 export function criarAtividadeComplementar({
@@ -18,8 +13,8 @@ export function criarAtividadeComplementar({
     method: 'POST',
     body: JSON.stringify({
       descricao,
-      carga_horaria_solicitada: cargaHorariaSolicitada,
-      tipo_atividade: tipoAtividade,
+      carga_horaria_solicitada: Number(cargaHorariaSolicitada),
+      tipo_atividade: Number(tipoAtividade),
     }),
   });
 }
