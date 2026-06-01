@@ -52,7 +52,7 @@ export default function Submissions({ navigation }) {
       setLoading(true);
       setErro(null);
 
-      const data = await listarSubmissoes();
+      const data = await listarSubmissoes({ page_size: 100 });
       const lista = Array.isArray(data) ? data : data.results || [];
 
       setSubmissoes(lista);

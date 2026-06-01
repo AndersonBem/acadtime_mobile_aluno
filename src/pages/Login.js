@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
     height: 150,
     resizeMode: 'contain',
     alignSelf: 'center',
-    marginTop: 0,
+    marginTop: -60,
   },
   SubTitulo: {
     fontSize: 22,
