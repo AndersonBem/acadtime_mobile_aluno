@@ -13,6 +13,7 @@ import {
   listarNotificacoesNaoLidas,
   listarNotificacoesLidas,
   marcarTodasNotificacoesComoLidas,
+  marcarNotificacaoComoLida,
 } from '../api/notificacoes';
 
 import AppHeader from '../components/AppHeader';
@@ -60,17 +61,38 @@ export default function Notifications({ navigation }) {
       console.error('Erro ao marcar notificações como lidas:', error);
     }
   }
+  async function marcarComoLida(notificacao) {
+    try {
+      if (!notificacao?.id || notificacao.lida) {
+        return;
+      }
+
+      await marcarNotificacaoComoLida(notificacao.id);
+      await carregarNotificacoes(filter);
+    } catch (error) {
+      console.error('Erro ao marcar notificação como lida:', error);
+    }
+  }
 
   useEffect(() => {
     carregarNotificacoes('todas');
   }, []);
 
   const hojeItems = notifications.filter((item) => item.grupo === 'Hoje');
-  const semanaItems = notifications.filter((item) => item.grupo === 'Esta Semana');
+  const semanaItems = notifications.filter((item) => {
+    const match = String(item.tempo_relativo || '').match(/Há (\d+)d/);
+    const dias = match ? Number(match[1]) : null;
 
-  const outrasItems = notifications.filter(
-    (item) => item.grupo !== 'Hoje' && item.grupo !== 'Esta Semana'
-  );
+    return dias !== null && dias <= 7;
+  });
+
+  const outrasItems = notifications.filter((item) => {
+    const isHoje = item.tempo_relativo === 'Hoje';
+    const match = String(item.tempo_relativo || '').match(/Há (\d+)d/);
+    const dias = match ? Number(match[1]) : null;
+
+    return !isHoje && (dias === null || dias > 7);
+  });
 
   return (
     <View style={styles.screen}>
@@ -135,9 +157,23 @@ export default function Notifications({ navigation }) {
             </View>
           ) : (
             <>
-              <NotificationSection title="Hoje" items={hojeItems} />
-              <NotificationSection title="Esta Semana" items={semanaItems} />
-              <NotificationSection title="Anteriores" items={outrasItems} />
+              <NotificationSection
+                title="Hoje"
+                items={hojeItems}
+                onPressNotification={marcarComoLida}
+              />
+
+              <NotificationSection
+                title="Esta Semana"
+                items={semanaItems}
+                onPressNotification={marcarComoLida}
+              />
+
+              <NotificationSection
+                title="Anteriores"
+                items={outrasItems}
+                onPressNotification={marcarComoLida}
+              />
             </>
           )}
         </ScrollView>
@@ -151,7 +187,7 @@ export default function Notifications({ navigation }) {
   );
 }
 
-function NotificationSection({ title, items }) {
+function NotificationSection({ title, items, onPressNotification }) {
   if (!items.length) return null;
 
   return (
@@ -159,7 +195,15 @@ function NotificationSection({ title, items }) {
       <Text style={styles.sectionTitle}>{title}</Text>
 
       {items.map((item) => (
-        <View key={item.id || item.id_notificacao} style={styles.card}>
+        <TouchableOpacity
+          key={item.id || item.id_notificacao}
+          style={[
+            styles.card,
+            item.lida && styles.cardRead,
+          ]}
+          onPress={() => onPressNotification?.(item)}
+          activeOpacity={0.85}
+        >
           <View style={[styles.iconBox, getIconStyle(item.status)]}>
             <Text style={styles.iconText}>{getIcon(item.status)}</Text>
           </View>
@@ -169,8 +213,9 @@ function NotificationSection({ title, items }) {
               {item.titulo || item.title || 'Notificação'}
             </Text>
 
-            <Text style={styles.cardSubtitle}>
-              {item.mensagem || item.descricao || item.data || '-'}
+            <Text style={styles.cardSubtitle} numberOfLines={2}>
+              {item.subtitulo || 'Data não informada'}
+              {item.curso ? ` · ${item.curso}` : ''}
             </Text>
           </View>
 
@@ -182,10 +227,10 @@ function NotificationSection({ title, items }) {
             </View>
 
             <Text style={styles.timeText}>
-              {item.tempo || item.criado_em || item.data_criacao || ''}
+              {item.tempo_relativo || ''}
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
       ))}
     </View>
   );
@@ -413,5 +458,8 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontSize: 11,
     fontWeight: '600',
+  },
+  cardRead: {
+    opacity: 0.65,
   },
 });
