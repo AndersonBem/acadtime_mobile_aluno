@@ -5,11 +5,34 @@ import { Ionicons } from '@expo/vector-icons';
 import { getPerfilAluno } from '../api/perfil';
 import { colors, spacing } from '../styles/global';
 
+import { useNavigation } from '@react-navigation/native';
+
 export default function AppHeader({
   photoUrl,
   onPressNotifications,
   onPressProfile,
 }) {
+
+  const navigation = useNavigation();
+
+  function handlePressNotifications() {
+    if (onPressNotifications) {
+      onPressNotifications();
+      return;
+    }
+
+    navigation.navigate('Notifications');
+  }
+
+  function handlePressProfile() {
+    if (onPressProfile) {
+      onPressProfile();
+      return;
+    }
+
+    navigation.navigate('Profile');
+  }
+
   const [fotoPerfil, setFotoPerfil] = useState(photoUrl || null);
 
   useEffect(() => {
@@ -50,7 +73,7 @@ export default function AppHeader({
 
         <TouchableOpacity
           style={styles.profileButton}
-          onPress={onPressProfile}
+          onPress={handlePressProfile}
           activeOpacity={0.8}
         >
           {fotoPerfil ? (

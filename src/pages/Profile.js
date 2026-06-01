@@ -9,8 +9,12 @@ import {
   Alert,
   Platform
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from '@expo/vector-icons';
+
+import { getPerfilAluno, atualizarFotoPerfil } from '../api/perfil';
+
+import { logout } from '../api/auth';
 
 // IMPORTANDO O CONTEXTO GLOBAL
 import { useCurso } from '../contexts/CursoContext';
@@ -18,7 +22,7 @@ import { useCurso } from '../contexts/CursoContext';
 // 🌟 ALTERADO: IMPORTANDO TODO O ARQUIVO DE API COMO UM OBJETO PARA EVITAR ERRO DE EXPORT UNDEFINED
 import * as AlunoAPI from '../api/aluno';
 
-export default function Perfil({ navigation }) {
+export default function Perfil({ navigation, onLogout }) {
   // PEGANDO O CURSO SELECIONADO GLOBAL DO CONTEXTO
   const { cursoSelecionado } = useCurso();
 
@@ -33,14 +37,12 @@ export default function Perfil({ navigation }) {
         // Tenta buscar usando o novo formato de import seguro
         const funcaoPerfil = AlunoAPI.getMeuPerfilAluno || AlunoAPI.default?.getMeuPerfilAluno;
         const dadosAluno = await funcaoPerfil();
-        
+
         if (dadosAluno) {
           setAlunoLogado(dadosAluno);
 
-          // Renderiza a foto se ela já existir no banco
-          if (dadosAluno.foto_url || dadosAluno.foto) {
-            setFotoPerfil(dadosAluno.foto_url || dadosAluno.foto);
-          }
+          const perfilMobile = await getPerfilAluno();
+          setFotoPerfil(perfilMobile?.foto_perfil_url || null);
         }
       } catch (error) {
         console.log("Erro ao buscar dados do perfil:", error);
@@ -50,37 +52,29 @@ export default function Perfil({ navigation }) {
     carregarDadosAluno();
   }, []); 
 
-  // FUNÇÃO QUE FAZ O PATCH REAL NA API
-  async function enviarFotoParaServidor(asset) {
+  async function sairDaConta() {
     try {
-      const formData = new FormData();
-      
-      const uriFormatada = Platform.OS === 'ios' ? asset.uri.replace('file://', '') : asset.uri;
-
-      formData.append('foto', {
-        uri: uriFormatada,
-        name: asset.fileName || `perfil_${Date.now()}.jpg`,
-        type: asset.mimeType || asset.type || 'image/jpeg',
-      });
-
-      // 🌟 BUSCA A FUNÇÃO DE FORMA SEGURA SEJA ELA EXPORTAÇÃO DIRETA OU DEFAULT
-      const funcaoAtualizarFoto = AlunoAPI.atualizarFotoPerfil || AlunoAPI.default?.atualizarFotoPerfil;
-
-      if (!funcaoAtualizarFoto) {
-        throw new Error("A função atualizarFotoPerfil não foi encontrada no arquivo api/aluno.js");
-      }
-
-      const resposta = await funcaoAtualizarFoto(formData);
-      
-      const novaFoto = resposta?.foto_url || resposta?.foto || asset.uri;
-      setFotoPerfil(novaFoto);
-      
-      Alert.alert("Sucesso", "Foto de perfil atualizada com sucesso!");
+      await logout();
+      onLogout?.();
     } catch (error) {
-      console.log("Erro detalhado ao enviar foto para o servidor:", error);
-      Alert.alert("Erro", "Não foi possível salvar a foto no servidor.");
+      console.log('Erro ao sair da conta:', error);
     }
   }
+
+  // FUNÇÃO QUE FAZ O PATCH REAL NA API
+  async function enviarFotoParaServidor(asset) {
+  try {
+    const resposta = await atualizarFotoPerfil(asset);
+
+    const novaFoto = resposta?.foto_perfil_url || asset.uri;
+    setFotoPerfil(novaFoto);
+
+    Alert.alert("Sucesso", "Foto de perfil atualizada com sucesso!");
+  } catch (error) {
+    console.log("Erro detalhado ao enviar foto para o servidor:", error);
+    Alert.alert("Erro", "Não foi possível salvar a foto no servidor.");
+  }
+}
 
   // FUNÇÕES DO IMAGE PICKER
   async function escolherDaGaleria() {
@@ -220,12 +214,7 @@ export default function Perfil({ navigation }) {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.botaoAcaoOutline}>
-            <Ionicons name="lock-closed-outline" size={20} color="#000" style={styles.iconeBotao} />
-            <Text style={styles.textoBotaoAcao}>Alterar Senha</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.botaoAcaoOutline} onPress={() => { if (navigation) navigation.navigate('Login'); }}>
+          <TouchableOpacity style={styles.botaoAcaoOutline} onPress={sairDaConta}>
             <Ionicons name="log-out-outline" size={20} color="#2b2b2b" style={styles.iconeBotao} />
             <Text style={styles.textoBotaoAcao}>Sair da conta</Text>
           </TouchableOpacity>

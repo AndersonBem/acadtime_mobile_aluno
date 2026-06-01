@@ -15,8 +15,8 @@ import {
   Platform
 } from 'react-native';
 
-/ IMPORTANDO A FUNÇÃO DE RECUPERAÇÃO DA SUA API/
-import { RecuperarSenha } from '../api/auth';
+// IMPORTANDO A FUNÇÃO DE RECUPERAÇÃO DA SUA API
+import { recuperarSenha } from '../api/auth';
 
 
 export default function RecuperarSenhaScreen() {
@@ -33,7 +33,7 @@ export default function RecuperarSenhaScreen() {
     setLoading(true);
 
     try {
-      await RecuperarSenha(email.trim());
+      await recuperarSenha(email.trim());
       Alert.alert(
         'Sucesso', 
         'Se o e-mail estiver cadastrado, um link de recuperação será enviado para a sua caixa de entrada.',
@@ -56,7 +56,7 @@ export default function RecuperarSenhaScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} bounces={false}>
         <View style={styles.containerPai}>
           
-          /* BOTÃO VOLTAR NO TOPO */
+          {/* BOTÃO VOLTAR NO TOPO */}
           <TouchableOpacity 
             style={styles.btnVoltarTopo} 
             onPress={() => navigation.goBack()}
@@ -66,7 +66,7 @@ export default function RecuperarSenhaScreen() {
             <Text style={styles.textoVoltarTopo}>Voltar</Text>
           </TouchableOpacity>
 
-          /* LOGO E TÍTULOS SUPERIORES */
+          {/* LOGO E TÍTULOS SUPERIORES */}
           <Image
             source={require('../../assets/logo01.png')}
             style={styles.logoTopo}
@@ -77,7 +77,7 @@ export default function RecuperarSenhaScreen() {
             Digite seu e-mail e enviaremos o link{"\n"}para redefinir sua senha
           </Text>
 
-          /* CONTAINER AZUL ESCURO COM CURVA EXCLUSIVA */
+          {/* CONTAINER AZUL ESCURO COM CURVA EXCLUSIVA */}
           <View style={styles.containerAzul}>
             
             <View style={styles.circuloIcone}>
@@ -104,7 +104,7 @@ export default function RecuperarSenhaScreen() {
               </View>
             </View>
 
-            /* BOTÃO LARANJA DE ENVIAR */
+            {/* BOTÃO LARANJA DE ENVIAR */}
             <TouchableOpacity style={styles.botaoEnviar} onPress={lidarComRecuperacao} disabled={loading}>
               {loading ? (
                 <ActivityIndicator size="small" color="#fff" />

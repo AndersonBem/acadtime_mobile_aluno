@@ -34,7 +34,9 @@ export default function Routes() {
 
     verificarSessao();
   }, []);
-
+  function handleLogout() {
+    setLogado(false);
+  }
   if (loading) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -48,10 +50,8 @@ export default function Routes() {
         <CursoProvider>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 {logado ? (
-                    <>
-                    <Stack.Screen name="Login" component={Login} />
-                     <Stack.Screen name="RecuperarSenha" component={RecuperarSenha} />
-                    <Stack.Screen name="dashboard" component={Dashboard} />
+                  <>
+                    <Stack.Screen name="Dashboard" component={Dashboard} />
                     <Stack.Screen name="Submissions" component={Submissions} />
                     <Stack.Screen name="NewSubmission" component={NewSubmission} />
                     <Stack.Screen name="ReviewSubmission" component={ReviewSubmission} />
@@ -59,18 +59,28 @@ export default function Routes() {
                     <Stack.Screen name="SuccessSubmission" component={SuccessSubmission} />
                     <Stack.Screen name="SubmissionDetails" component={SubmissionDetails} />
                     <Stack.Screen name="Notifications" component={Notifications} />
-                    <Stack.Screen name="Profile" component={Profile} />
-                    
-                    </>
+                    <Stack.Screen name="Profile">
+                      {(props) => (
+                        <Profile
+                          {...props}
+                          onLogout={handleLogout}
+                        />
+                      )}
+                    </Stack.Screen>
+                  </>
                 ) : (
-                <Stack.Screen name="Login">
-                    {(props) => (
-                    <Login
-                        {...props}
-                        onLogin={() => setLogado(true)}
-                    />
-                    )}
-                </Stack.Screen>
+                  <>
+                    <Stack.Screen name="Login">
+                      {(props) => (
+                        <Login
+                          {...props}
+                          onLogin={() => setLogado(true)}
+                        />
+                      )}
+                    </Stack.Screen>
+
+                    <Stack.Screen name="RecuperarSenha" component={RecuperarSenha} />
+                  </>
                 )}
             </Stack.Navigator>
         </CursoProvider>

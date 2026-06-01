@@ -10,14 +10,17 @@ import {
   StyleSheet,
   Alert,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // IMPORTANDO DA  API
 import { login } from '../api/auth';
 
-export default function Login({ navigation }) {
+export default function Login({ navigation, onLogin }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [secureText, setSecureText] = useState(true);
@@ -27,12 +30,15 @@ export default function Login({ navigation }) {
   async function autenticarBiometria() {
     try {
     
-      if (email.trim() === '' || senha.trim() === '') {
+      const emailSalvo = await SecureStore.getItemAsync('saved_email');
+      const senhaSalva = await SecureStore.getItemAsync('saved_password');
+
+      if (!emailSalvo || !senhaSalva) {
         Alert.alert(
-          'Acesso Negado',
-          'Para entrar com a biometria, você precisa digitar seu e-mail e sua senha primeiro.'
+          'Biometria não configurada',
+          'Faça login com e-mail e senha uma vez neste aparelho para ativar a biometria.'
         );
-        return; 
+        return;
       }
 
    
@@ -54,15 +60,13 @@ export default function Login({ navigation }) {
         console.log('Biometria aceita. Validando os dados digitados na API...');
 
     
-        const response = await login(email.trim(), senha);
+        const response = await login(emailSalvo, senhaSalva);
         console.log('Resposta da API na biometria:', response);
 
       
-        await SecureStore.setItemAsync('saved_email', String(email).trim());
-        await SecureStore.setItemAsync('saved_password', String(senha));
 
         Alert.alert('Sucesso', 'Bem-vindo de volta!');
-        if (navigation) navigation.navigate('dashboard');
+        onLogin?.();
       }
     } catch (error) {
       console.log('Erro conhecido na autenticação biométrica:', error);
@@ -85,13 +89,11 @@ export default function Login({ navigation }) {
       // Faz a autenticação da API 
       const data = await login(email, senha);
       console.log('Login manual bem-sucedido:', data);
-
-      // Salva os dados para histórico seguro do aparelho
+      
       await SecureStore.setItemAsync('saved_email', String(email).trim());
       await SecureStore.setItemAsync('saved_password', String(senha));
 
-      setLoading(false);
-      if (navigation) navigation.navigate('dashboard');
+      onLogin?.();
 
     } catch (error) {
       setLoading(false);
@@ -102,7 +104,15 @@ export default function Login({ navigation }) {
   }
 
   return (
-    <View style={styles.containerPai}>
+  <KeyboardAvoidingView
+    style={styles.containerPai}
+    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+  >
+    <ScrollView
+      contentContainerStyle={styles.scrollContent}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
       <Image
         source={require('../../assets/logo01.png')}
         style={styles.logoTopo}
@@ -194,7 +204,8 @@ export default function Login({ navigation }) {
           <Text style={styles.textoBiometria}>Entrar com biometria</Text>
         </TouchableOpacity>
       </View>
-    </View>
+     </ScrollView>
+  </KeyboardAvoidingView>
   );
 }
 
@@ -205,7 +216,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     marginBottom: 1,
-    height: 660,
+    minHeight: 660,
     borderTopLeftRadius: 50,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
@@ -326,14 +337,13 @@ const styles = StyleSheet.create({
   containerPai: {
     flex: 1,
     backgroundColor: '#f4f4f4',
-    justifyContent: 'flex-end',
   },
   logoTopo: {
     width: 250,
     height: 150,
     resizeMode: 'contain',
     alignSelf: 'center',
-    marginTop: 30,
+    marginTop: 0,
   },
   SubTitulo: {
     fontSize: 22,
@@ -353,5 +363,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#666',
     lineHeight: 15,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    paddingTop: 40,
   },
 });
