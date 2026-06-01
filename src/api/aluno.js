@@ -17,3 +17,15 @@ export async function getCursoAtualAluno() {
 
     return cursos[0] || null;
 }
+
+export async function atualizarFotoPerfil(formData) {   
+    const data = await apiRequest('/aluno', {
+        method: 'PATCH', 
+        body: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+
+    return data;
+}
