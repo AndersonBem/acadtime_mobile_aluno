@@ -42,7 +42,10 @@ export default function NewSubmission({ navigation }) {
 
 return (
   <View style={styles.screen}>
-    <Header />
+    <Header
+      onPressNotifications={() => navigation.navigate('Notifications')}
+      onPressProfile={() => navigation.navigate('Profile')}
+    />
 
     <ScrollView
       style={styles.scroll}
@@ -62,7 +65,10 @@ return (
       />
     </ScrollView>
 
-    <FooterNavigation navigation={navigation} />
+    <FooterNavigation
+      activeRoute="NewSubmission"
+      onNavigate={(screen) => navigation.navigate(screen)}
+    />
   </View>
 );
 }

@@ -7,7 +7,10 @@ import SuccessFeedbackCard from '../components/SuccessFeedbackCard';
 export default function SuccessSubmission({ navigation }) {
   return (
     <View style={styles.screen}>
-      <Header />
+      <Header
+        onPressNotifications={() => navigation.navigate('Notifications')}
+        onPressProfile={() => navigation.navigate('Profile')}
+      />
 
       <View style={styles.content}>
         <SuccessFeedbackCard
@@ -18,7 +21,10 @@ export default function SuccessSubmission({ navigation }) {
         />
       </View>
 
-      <FooterNavigation navigation={navigation} />
+      <FooterNavigation
+        activeRoute="NewSubmission"
+        onNavigate={(screen) => navigation.navigate(screen)}
+      />
     </View>
   );
 }

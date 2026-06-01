@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+import { getPerfilAluno } from '../api/perfil';
 import { colors, spacing } from '../styles/global';
 
 export default function AppHeader({
@@ -7,6 +10,26 @@ export default function AppHeader({
   onPressNotifications,
   onPressProfile,
 }) {
+  const [fotoPerfil, setFotoPerfil] = useState(photoUrl || null);
+
+  useEffect(() => {
+    if (photoUrl) {
+      setFotoPerfil(photoUrl);
+      return;
+    }
+
+    async function carregarFotoPerfil() {
+      try {
+        const perfil = await getPerfilAluno();
+        setFotoPerfil(perfil?.foto_perfil_url || null);
+      } catch (error) {
+        console.log('Erro ao carregar foto do perfil:', error);
+      }
+    }
+
+    carregarFotoPerfil();
+  }, [photoUrl]);
+
   return (
     <View style={styles.container}>
       <View style={styles.logoArea}>
@@ -30,9 +53,9 @@ export default function AppHeader({
           onPress={onPressProfile}
           activeOpacity={0.8}
         >
-          {photoUrl ? (
+          {fotoPerfil ? (
             <Image
-              source={{ uri: photoUrl }}
+              source={{ uri: fotoPerfil }}
               style={styles.profileImage}
             />
           ) : (

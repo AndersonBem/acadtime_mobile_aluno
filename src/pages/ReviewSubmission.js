@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   FlatList,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,6 +16,7 @@ import Header from '../components/AppHeader';
 import FooterNavigation from '../components/BottomTabBar';
 import OCRLoadingCard from '../components/OCRLoadingCard';
 import PrimaryButton from '../components/PrimaryButton';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { extrairDadosCertificado } from '../api/ocr';
 import { listarTiposAtividade } from '../api/atividades';
@@ -36,6 +39,7 @@ export default function ReviewSubmission({ route, navigation }) {
   const [tiposAtividade, setTiposAtividade] = useState([]);
   const [tipoAtividadeSelecionadoId, setTipoAtividadeSelecionadoId] = useState('');
   const [modalVisivel, setModalVisivel] = useState(false);
+  const [mostrarDatePicker, setMostrarDatePicker] = useState(false);
 
   const tipoAtividadeSelecionado = useMemo(() => {
     return tiposAtividade.find(
@@ -87,6 +91,27 @@ export default function ReviewSubmission({ route, navigation }) {
     }
   }
 
+  function formatarDataParaInput(data) {
+    if (!data) return '';
+
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+
+    return `${ano}-${mes}-${dia}`;
+  }
+
+  function handleSelecionarData(event, selectedDate) {
+    setMostrarDatePicker(false);
+
+    if (!selectedDate) return;
+
+    setSubmissionData({
+      ...submissionData,
+      date: formatarDataParaInput(selectedDate),
+    });
+  }
+
   function handleContinue() {
     if (!tipoAtividadeSelecionadoId) {
       setErro('Selecione o tipo da atividade.');
@@ -104,18 +129,33 @@ export default function ReviewSubmission({ route, navigation }) {
   if (loading) {
     return (
       <View style={styles.screen}>
-        <Header />
+        <Header
+          onPressNotifications={() => navigation.navigate('Notifications')}
+          onPressProfile={() => navigation.navigate('Profile')}
+        />
         <OCRLoadingCard />
       </View>
     );
   }
 
   return (
-    <View style={styles.screen}>
-      <Header />
+    <KeyboardAvoidingView
+      style={styles.screen}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={20}
+    >
+      <Header
+        onPressNotifications={() => navigation.navigate('Notifications')}
+        onPressProfile={() => navigation.navigate('Profile')}
+      />
 
-      <ScrollView contentContainerStyle={styles.container}
-        style={styles.scroll}>
+        <ScrollView
+          contentContainerStyle={styles.container}
+          style={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentInsetAdjustmentBehavior="automatic"
+        >
         <Text style={styles.title}>Revisar dados</Text>
 
         {!!erro && <Text style={styles.error}>{erro}</Text>}
@@ -156,13 +196,26 @@ export default function ReviewSubmission({ route, navigation }) {
           }
         />
 
-        <Field
-          label="Data"
-          value={submissionData.date}
-          onChangeText={(v) =>
-            setSubmissionData({ ...submissionData, date: v })
-          }
-        />
+        <Text style={styles.label}>Data</Text>
+
+        <TouchableOpacity
+          style={styles.textInput}
+          onPress={() => setMostrarDatePicker(true)}
+          activeOpacity={0.8}
+        >
+          <Text>
+            {submissionData.date || 'Selecione a data'}
+          </Text>
+        </TouchableOpacity>
+
+        {mostrarDatePicker && (
+          <DateTimePicker
+            value={submissionData.date ? new Date(submissionData.date) : new Date()}
+            mode="date"
+            display="default"
+            onChange={handleSelecionarData}
+          />
+        )}
 
         <PrimaryButton title="Continuar" onPress={handleContinue} />
       </ScrollView>
@@ -206,8 +259,11 @@ export default function ReviewSubmission({ route, navigation }) {
         </View>
       </Modal>
 
-      <FooterNavigation navigation={navigation} />
-    </View>
+      <FooterNavigation
+        activeRoute="NewSubmission"
+        onNavigate={(screen) => navigation.navigate(screen)}
+      />
+    </KeyboardAvoidingView>
   );
 }
 
@@ -233,7 +289,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: spacing.lg,
-    paddingBottom: 130,
+    paddingBottom: 180,
   },
   title: {
     fontSize: 24,

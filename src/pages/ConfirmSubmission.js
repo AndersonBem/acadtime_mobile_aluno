@@ -11,8 +11,8 @@ import SubmissionSummaryCard from '../components/SubmissionSummaryCard';
 import PrimaryButton from '../components/PrimaryButton';
 
 import { criarSubmissao } from '../api/submissoes';
-import { listarInscricoesAtivasDoAluno, listarCursos } from '../api/cursos';
 import { criarAtividadeComplementar } from '../api/atividades';
+import { useCurso } from '../contexts/CursoContext';
 
 export default function ConfirmSubmission({ route, navigation }) {
   const {
@@ -22,7 +22,11 @@ export default function ConfirmSubmission({ route, navigation }) {
     tipoAtividadeNome,
   } = route.params;
 
+  const { cursoSelecionado } = useCurso();
+
+
   const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState('');
 
   function extrairHoras(valor) {
     const somenteNumeros = String(valor || '').replace(/\D/g, '');
@@ -33,6 +37,8 @@ export default function ConfirmSubmission({ route, navigation }) {
 
   async function handleSubmit() {
     if (enviando) return;
+
+    console.log('Cliquei em confirmar submissão');
 
     try {
       setEnviando(true);
@@ -56,26 +62,18 @@ export default function ConfirmSubmission({ route, navigation }) {
         return;
       }
 
-      const inscricoesAtivas = await listarInscricoesAtivasDoAluno();
-      const cursos = await listarCursos();
+      const cursoId = cursoSelecionado?.id || cursoSelecionado?.id_curso;
 
-      const inscricaoAtiva = inscricoesAtivas[0];
+      console.log('Curso selecionado no contexto:', cursoSelecionado);
+      console.log('Curso ID usado na submissão:', cursoId);
 
-      if (!inscricaoAtiva) {
-        console.log('Nenhuma inscrição ativa encontrada.');
+      if (!cursoId) {
+        console.log('Nenhum curso selecionado.');
         return;
       }
 
-      const cursoEncontrado = cursos.find(
-        (curso) =>
-          curso.nome?.toLowerCase().trim() ===
-          inscricaoAtiva.nome_curso?.toLowerCase().trim()
-      );
 
-      if (!cursoEncontrado) {
-        console.log('Curso não encontrado:', inscricaoAtiva.nome_curso);
-        return;
-      }
+      console.log('Criando atividade complementar...');
 
       const atividadeCriada = await criarAtividadeComplementar({
         descricao: submissionData.activity || 'Atividade complementar',
@@ -83,21 +81,26 @@ export default function ConfirmSubmission({ route, navigation }) {
         tipoAtividade: Number(tipoAtividadeSelecionadoId),
       });
 
+      console.log('Atividade criada:', atividadeCriada);
+
       const submissionDataTratada = {
         ...submissionData,
         hours: String(horasSolicitadas),
       };
 
-      await criarSubmissao({
-        curso: cursoEncontrado.id_curso,
+      const submissaoCriada = await criarSubmissao({
+        curso: cursoId,
         atividadeComplementar: atividadeCriada.id_atividade_complementar,
         arquivo,
         submissionData: submissionDataTratada,
       });
 
+      console.log('Submissão criada:', submissaoCriada);
+
       navigation.replace('SuccessSubmission');
     } catch (error) {
-      console.log('Erro ao criar submissão:', error);
+      console.log('Erro ao criar submissão:', JSON.stringify(error, null, 2));
+      setErro(error?.detail || 'Erro ao criar submissão.');
     } finally {
       setEnviando(false);
     }
@@ -105,7 +108,10 @@ export default function ConfirmSubmission({ route, navigation }) {
 
   return (
     <View style={styles.screen}>
-      <Header />
+      <Header
+        onPressNotifications={() => navigation.navigate('Notifications')}
+        onPressProfile={() => navigation.navigate('Profile')}
+      />
 
       <ScrollView
         style={styles.scroll}
@@ -129,7 +135,10 @@ export default function ConfirmSubmission({ route, navigation }) {
         </View>
       </ScrollView>
 
-      <FooterNavigation navigation={navigation} />
+      <FooterNavigation
+        activeRoute="NewSubmission"
+        onNavigate={(screen) => navigation.navigate(screen)}
+      />
     </View>
   );
 }
