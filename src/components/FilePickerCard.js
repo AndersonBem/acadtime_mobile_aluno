@@ -11,6 +11,7 @@ export default function FilePickerCard({
   erro,
   onCamera,
   onGallery,
+  onExtract,
 }) {
   return (
     <View style={styles.card}>
@@ -22,13 +23,9 @@ export default function FilePickerCard({
         />
       </View>
 
-      <Text style={styles.title}>
-        Selecione seu certificado
-      </Text>
+      <Text style={styles.title}>Selecione seu certificado</Text>
 
-      <Text style={styles.subtitle}>
-        PDF, JPG ou PNG até 5MB
-      </Text>
+      <Text style={styles.subtitle}>PDF, JPG ou PNG até 5MB</Text>
 
       <View style={styles.buttonsArea}>
         <PrimaryButton
@@ -39,33 +36,35 @@ export default function FilePickerCard({
         <View style={{ height: spacing.sm }} />
 
         <SecondaryButton
-          title="Escolher da galeria"
+          title="Selecionar arquivo"
           onPress={onGallery}
         />
       </View>
 
       {arquivo && (
-        <View style={styles.fileInfo}>
-          <Ionicons
-            name="checkmark-circle"
-            size={18}
-            color={colors.success}
-          />
+        <>
+          <View style={styles.fileInfo}>
+            <Ionicons
+              name="checkmark-circle"
+              size={18}
+              color={colors.success}
+            />
 
-          <Text
-            style={styles.fileName}
-            numberOfLines={1}
-          >
-            {arquivo.name}
-          </Text>
-        </View>
+            <Text style={styles.fileName} numberOfLines={1}>
+              {arquivo.name}
+            </Text>
+          </View>
+
+          <View style={styles.extractButtonArea}>
+            <PrimaryButton
+              title="Extrair dados"
+              onPress={onExtract}
+            />
+          </View>
+        </>
       )}
 
-      {erro && (
-        <Text style={styles.errorText}>
-          {erro}
-        </Text>
-      )}
+      {erro && <Text style={styles.errorText}>{erro}</Text>}
     </View>
   );
 }
@@ -75,7 +74,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     padding: spacing.lg,
-
     shadowColor: '#000',
     shadowOpacity: 0.08,
     shadowRadius: 8,
@@ -83,7 +81,6 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-
     elevation: 2,
   },
 
@@ -91,14 +88,10 @@ const styles = StyleSheet.create({
     width: 68,
     height: 68,
     borderRadius: 999,
-
     backgroundColor: '#eef4ff',
-
     alignItems: 'center',
     justifyContent: 'center',
-
     alignSelf: 'center',
-
     marginBottom: spacing.md,
   },
 
@@ -107,7 +100,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.text,
     textAlign: 'center',
-
     marginBottom: 4,
   },
 
@@ -115,7 +107,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textMuted,
     textAlign: 'center',
-
     marginBottom: spacing.lg,
   },
 
@@ -127,7 +118,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-
     marginTop: spacing.sm,
   },
 
@@ -138,10 +128,13 @@ const styles = StyleSheet.create({
     maxWidth: '85%',
   },
 
+  extractButtonArea: {
+    marginTop: spacing.md,
+  },
+
   errorText: {
     marginTop: spacing.sm,
     textAlign: 'center',
-
     color: colors.danger,
     fontSize: 12,
     fontWeight: '600',
