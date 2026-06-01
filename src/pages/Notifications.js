@@ -78,7 +78,9 @@ export default function Notifications({ navigation }) {
     carregarNotificacoes('todas');
   }, []);
 
-  const hojeItems = notifications.filter((item) => item.grupo === 'Hoje');
+  const hojeItems = notifications.filter(
+    (item) => item.tempo_relativo === 'Hoje'
+  );
   const semanaItems = notifications.filter((item) => {
     const match = String(item.tempo_relativo || '').match(/Há (\d+)d/);
     const dias = match ? Number(match[1]) : null;
