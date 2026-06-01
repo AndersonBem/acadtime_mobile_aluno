@@ -11,6 +11,7 @@ import NewSubmission from '../pages/NewSubmission';
 import Notifications from '../pages/Notifications';
 import Profile from '../pages/Profile';
 import Login from '../pages/Login';
+import RecuperarSenha  from '../pages/RecuperarSenha';
 import { colors } from '../styles/global';
 
 const Stack = createNativeStackNavigator();
@@ -44,11 +45,14 @@ export default function Routes() {
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 {logado ? (
                     <>
-                    <Stack.Screen name="Dashboard" component={Dashboard} />
+                    <Stack.Screen name="Login" component={Login} />
+                     <Stack.Screen name="RecuperarSenha" component={RecuperarSenha} />
+                    <Stack.Screen name="dashboard" component={Dashboard} />
                     <Stack.Screen name="Submissions" component={Submissions} />
                     <Stack.Screen name="NewSubmission" component={NewSubmission} />
                     <Stack.Screen name="Notifications" component={Notifications} />
                     <Stack.Screen name="Profile" component={Profile} />
+                    
                     </>
                 ) : (
                 <Stack.Screen name="Login">
