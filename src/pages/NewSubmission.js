@@ -1,23 +1,76 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import * as DocumentPicker from 'expo-document-picker';
 
-import AppHeader from '../components/AppHeader';
-import BottomTabBar from '../components/BottomTabBar';
-import { colors } from '../styles/global';
+import Header from '../components/AppHeader';
+import FooterNavigation from '../components/BottomTabBar';
+import FilePickerCard from '../components/FilePickerCard';
 
-export default function NewSubmissions({ navigation }) {
-  return (
-    <View style={styles.screen}>
-      <AppHeader />
-      <View style={styles.content}>
-        <Text style={styles.title}>Nova submissão</Text>
-        <Text style={styles.text}>Tela em construção.</Text>
-      </View>
-      <BottomTabBar
-        activeRoute="NewSubmissions"
-        onNavigate={(screen) => navigation.navigate(screen)}
+import { colors, spacing } from '../styles/global';
+
+export default function NewSubmission({ navigation }) {
+  const [arquivo, setArquivo] = useState(null);
+  const [erro, setErro] = useState('');
+
+  async function handlePickFile() {
+    try {
+      setErro('');
+
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['application/pdf', 'image/png', 'image/jpeg'],
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled) {
+        setArquivo(result.assets[0]);
+      }
+    } catch {
+      setErro('Erro ao selecionar arquivo.');
+    }
+  }
+
+  function handleContinue() {
+    if (!arquivo) {
+      setErro('Selecione um certificado.');
+      return;
+    }
+
+    navigation.navigate('ReviewSubmission', {
+      arquivo,
+    });
+  }
+
+return (
+  <View style={styles.screen}>
+    <Header
+      onPressNotifications={() => navigation.navigate('Notifications')}
+      onPressProfile={() => navigation.navigate('Profile')}
+    />
+
+    <ScrollView
+      style={styles.scroll}
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+    >
+      <Text style={styles.title}>Nova submissão</Text>
+
+      {!!erro && <Text style={styles.error}>{erro}</Text>}
+
+      <FilePickerCard
+        arquivo={arquivo}
+        erro={erro}
+        onCamera={handlePickFile}
+        onGallery={handlePickFile}
+        onExtract={handleContinue}
       />
-    </View>
-  );
+    </ScrollView>
+
+    <FooterNavigation
+      activeRoute="NewSubmission"
+      onNavigate={(screen) => navigation.navigate(screen)}
+    />
+  </View>
+);
 }
 
 const styles = StyleSheet.create({
@@ -25,18 +78,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  content: {
+
+  scroll: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
+
+  container: {
+    padding: spacing.lg,
+    paddingBottom: 130,
+  },
+
   title: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: colors.text,
+    fontSize: 26,
+    fontWeight: '700',
+    marginBottom: 20,
   },
-  text: {
-    marginTop: 8,
-    color: colors.textMuted,
+
+  error: {
+    color: 'red',
+    marginBottom: 10,
   },
 });

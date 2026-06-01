@@ -8,6 +8,10 @@ import { CursoProvider } from '../contexts/CursoContext';
 import Dashboard from '../pages/dashboard';
 import Submissions from '../pages/Submissions';
 import NewSubmission from '../pages/NewSubmission';
+import ReviewSubmission from '../pages/ReviewSubmission';
+import ConfirmSubmission from '../pages/ConfirmSubmission';
+import SuccessSubmission from '../pages/SuccessSubmission';
+import SubmissionDetails from '../pages/SubmissionDetails';
 import Notifications from '../pages/Notifications';
 import Profile from '../pages/Profile';
 import Login from '../pages/Login';
@@ -50,6 +54,10 @@ export default function Routes() {
                     <Stack.Screen name="dashboard" component={Dashboard} />
                     <Stack.Screen name="Submissions" component={Submissions} />
                     <Stack.Screen name="NewSubmission" component={NewSubmission} />
+                    <Stack.Screen name="ReviewSubmission" component={ReviewSubmission} />
+                    <Stack.Screen name="ConfirmSubmission" component={ConfirmSubmission} />
+                    <Stack.Screen name="SuccessSubmission" component={SuccessSubmission} />
+                    <Stack.Screen name="SubmissionDetails" component={SubmissionDetails} />
                     <Stack.Screen name="Notifications" component={Notifications} />
                     <Stack.Screen name="Profile" component={Profile} />
                     

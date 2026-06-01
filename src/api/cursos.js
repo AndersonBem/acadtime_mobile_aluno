@@ -8,7 +8,8 @@ export async function listarInscricoesAtivasDoAluno() {
   const data = await listarInscricoesDoAluno();
 
   return data.filter((inscricao) => {
-    return inscricao.status_matricula?.toLowerCase() === 'ativa';
+    const status = inscricao.status_matricula?.toLowerCase().trim();
+    return status === 'ativo' || status === 'ativa';
   });
 }
 

@@ -16,22 +16,32 @@ export function getResumoSubmissoes(params = {}) {
     return apiRequest(`/submissao/resumo-dashboard/${query ? `?${query}` : ''}`);
 }
 
-export function criarSubmissao({ curso, atividadeComplementar, arquivo}) {
-    const form = new FormData();
+export async function criarSubmissao({
+  curso,
+  atividadeComplementar,
+  arquivo,
+  submissionData,
+}) {
+  const formData = new FormData();
 
-    form.append('curso', String(curso));
-    form.append('atividade_complementar', String(atividadeComplementar));
+  formData.append('curso', String(curso));
+  formData.append('atividade_complementar', String(atividadeComplementar));
 
-    form.append('certificado_arquivo', {
-        uri: arquivo.uri,
-        name: arquivo.name,
-        type: arquivo.mimeType || arquivo.type || 'application/pdf',
-    });
+  formData.append('certificado_arquivo', {
+    uri: arquivo.uri,
+    name: arquivo.name || 'certificado.pdf',
+    type: arquivo.mimeType || arquivo.type || 'application/pdf',
+  });
 
-    return apiRequest('/submissao/', {
-        method: 'POST',
-        body: form,
-    });
+  formData.append('curso_ocr', submissionData?.activity || '');
+  formData.append('instituicao_ocr', submissionData?.institution || '');
+  formData.append('carga_horaria_ocr', String(submissionData?.hours || ''));
+  formData.append('data_certificado_ocr', submissionData?.date || '');
+
+  return apiRequest('/submissao/', {
+    method: 'POST',
+    body: formData,
+  });
 }
 
 export function getUrlDownloadCertificado(id) {
