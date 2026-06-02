@@ -188,25 +188,25 @@ export default function Dashboard({ navigation }) {
 
           <View style={styles.metricsRow}>
             <DashboardMetricCard
-              icon="time-outline"
-              value={resumo.horas_aprovadas || 0}
-              label="Horas aprovadas"
-              color={colors.primary}
-              backgroundColor="#e8f1fb"
+              icon="checkmark-circle-outline"
+              value={resumo.submissoes_aprovadas || 0}
+              label="Submissões aprovadas"
+              color={colors.success}
+              backgroundColor="#e8f7ec"
             />
 
             <DashboardMetricCard
               icon="hourglass-outline"
-              value={resumo.horas_pendentes || 0}
-              label="Horas pendentes"
+              value={resumo.submissoes_pendentes || 0}
+              label="Submissões pendentes"
               color={colors.accent}
               backgroundColor="#fff3e3"
             />
 
             <DashboardMetricCard
               icon="close-circle-outline"
-              value={resumo.horas_rejeitadas || 0}
-              label="Horas rejeitadas"
+              value={resumo.submissoes_rejeitadas || 0}
+              label="Submissões rejeitadas"
               color={colors.danger}
               backgroundColor="#fdeaea"
             />

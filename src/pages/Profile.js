@@ -21,6 +21,7 @@ import { useCurso } from '../contexts/CursoContext';
 
 // 🌟 ALTERADO: IMPORTANDO TODO O ARQUIVO DE API COMO UM OBJETO PARA EVITAR ERRO DE EXPORT UNDEFINED
 import * as AlunoAPI from '../api/aluno';
+import BottomTabBar from '../components/BottomTabBar';
 
 export default function Perfil({ navigation, onLogout }) {
   // PEGANDO O CURSO SELECIONADO GLOBAL DO CONTEXTO
@@ -223,20 +224,10 @@ export default function Perfil({ navigation, onLogout }) {
       </ScrollView>
 
       {/* NAVBAR INFERIOR FIXA */}
-      <View style={styles.navBarInferior}>
-        <TouchableOpacity onPress={() => { if (navigation) navigation.navigate('Dashboard'); }}><Ionicons name="home-outline" size={24} color="#666" /></TouchableOpacity>
-        <TouchableOpacity><Ionicons name="document-text-outline" size={24} color="#666" /></TouchableOpacity>
-        
-        <TouchableOpacity style={styles.botaoFlutuante}>
-          <Ionicons name="add" size={28} color="#fff" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity onPress={() => { if (navigation) navigation.navigate('Notifications'); }}>
-          <Ionicons name="notifications-outline" size={24} color="#666" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity><Ionicons name="person" size={24} color="#0f4c8f" /></TouchableOpacity>
-      </View>
+      <BottomTabBar
+        activeRoute="Profile"
+        onNavigate={(screen) => navigation.navigate(screen)}
+      />
     </View>
   );
 }
