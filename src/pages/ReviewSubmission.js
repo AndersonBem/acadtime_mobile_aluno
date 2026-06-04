@@ -24,12 +24,12 @@ import { listarTiposAtividade } from '../api/atividades';
 import { spacing } from '../styles/global';
 
 export default function ReviewSubmission({ route, navigation }) {
-  const { arquivo } = route.params;
+  const { arquivo, modoManual = false } = route.params;
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!modoManual);
   const [erro, setErro] = useState('');
   const [submissionData, setSubmissionData] = useState({
-    fileName: '',
+    fileName: arquivo?.name || 'certificado.pdf',
     activity: '',
     institution: '',
     hours: '',
@@ -53,39 +53,46 @@ export default function ReviewSubmission({ route, navigation }) {
 
   async function carregarTudo() {
     try {
-      setLoading(true);
       setErro('');
 
       const tiposData = await listarTiposAtividade();
       setTiposAtividade(tiposData);
 
-          const response = await extrairDadosCertificado(arquivo);
+      if (modoManual) {
+        return;
+      }
 
-          console.log('ARQUIVO OCR:', arquivo);
-          console.log('RESPOSTA OCR:', JSON.stringify(response, null, 2));
+      setLoading(true);
 
-          if (!response.sucesso) {
-            setErro(
-              'Não foi possível extrair os dados automaticamente. Preencha manualmente.'
-            );
-          }
+      const response = await extrairDadosCertificado(arquivo);
 
-          const dados = response?.dados_extraidos || {};
+      console.log('ARQUIVO OCR:', arquivo);
+      console.log('RESPOSTA OCR:', JSON.stringify(response, null, 2));
 
-          setSubmissionData({
-            fileName: arquivo.name || 'certificado.pdf',
-            activity: dados.curso || dados.atividade_complementar || '',
-            institution: dados.instituicao || '',
-            hours: dados.carga_horaria
-              ? String(dados.carga_horaria)
-              : dados.carga_horaria_solicitada
-                ? String(dados.carga_horaria_solicitada)
-                : '',
-            date: dados.data_certificado || '',
-          });
+      if (!response.sucesso) {
+        setErro('Não foi possível extrair os dados automaticamente. Preencha manualmente.');
+      }
+
+      const dados = response?.dados_extraidos || {};
+
+      setSubmissionData({
+        fileName: arquivo?.name || 'certificado.pdf',
+        activity: dados.curso || dados.atividade_complementar || '',
+        institution: dados.instituicao || '',
+        hours: dados.carga_horaria
+          ? String(dados.carga_horaria)
+          : dados.carga_horaria_solicitada
+            ? String(dados.carga_horaria_solicitada)
+            : '',
+        date: dados.data_certificado || '',
+      });
     } catch (error) {
       console.log(error);
-      setErro('Erro ao extrair dados.');
+      setErro(
+        modoManual
+          ? 'Erro ao carregar dados.'
+          : 'Erro ao extrair dados.'
+      );
     } finally {
       setLoading(false);
     }
@@ -149,14 +156,16 @@ export default function ReviewSubmission({ route, navigation }) {
         onPressProfile={() => navigation.navigate('Profile')}
       />
 
-        <ScrollView
-          contentContainerStyle={styles.container}
-          style={styles.scroll}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          contentInsetAdjustmentBehavior="automatic"
-        >
-        <Text style={styles.title}>Revisar dados</Text>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        style={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="automatic"
+      >
+        <Text style={styles.title}>
+          {modoManual ? 'Preencher dados' : 'Revisar dados'}
+        </Text>
 
         {!!erro && <Text style={styles.error}>{erro}</Text>}
 
@@ -195,7 +204,6 @@ export default function ReviewSubmission({ route, navigation }) {
             setSubmissionData({ ...submissionData, hours: v })
           }
         />
-
         <Text style={styles.label}>Data</Text>
 
         <TouchableOpacity
@@ -203,9 +211,7 @@ export default function ReviewSubmission({ route, navigation }) {
           onPress={() => setMostrarDatePicker(true)}
           activeOpacity={0.8}
         >
-          <Text>
-            {submissionData.date || 'Selecione a data'}
-          </Text>
+          <Text>{submissionData.date || 'Selecione a data'}</Text>
         </TouchableOpacity>
 
         {mostrarDatePicker && (
@@ -228,9 +234,7 @@ export default function ReviewSubmission({ route, navigation }) {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              Selecione o tipo de atividade
-            </Text>
+            <Text style={styles.modalTitle}>Selecione o tipo de atividade</Text>
 
             <FlatList
               data={tiposAtividade}
@@ -281,7 +285,6 @@ function Field({ label, value, onChangeText, keyboardType = 'default' }) {
     </>
   );
 }
-
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
@@ -349,6 +352,6 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   scroll: {
-  flex: 1,
-},
+    flex: 1,
+  },
 });

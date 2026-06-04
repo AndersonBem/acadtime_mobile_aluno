@@ -29,11 +29,34 @@ export default function ConfirmSubmission({ route, navigation }) {
   const [erro, setErro] = useState('');
 
   function extrairHoras(valor) {
-    const somenteNumeros = String(valor || '').replace(/\D/g, '');
-    const horas = Number(somenteNumeros);
+  if (!valor) return 0;
 
-    return Number.isNaN(horas) ? 0 : horas;
+  const texto = String(valor)
+    .toLowerCase()
+    .replace('horas', '')
+    .replace('hora', '')
+    .replace('hrs', '')
+    .replace('hr', '')
+    .replace('h', '')
+    .replace(',', '.')
+    .trim();
+
+  // Caso venha no formato 02:00
+  if (texto.includes(':')) {
+    const [horas, minutos] = texto.split(':');
+
+    const h = Number(horas);
+    const m = Number(minutos || 0);
+
+    if (Number.isNaN(h) || Number.isNaN(m)) return 0;
+
+    return h + m / 60;
   }
+
+  const horas = Number(texto);
+
+  return Number.isNaN(horas) ? 0 : horas;
+}
 
   async function handleSubmit() {
     if (enviando) return;
