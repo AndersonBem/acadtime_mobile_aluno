@@ -40,9 +40,13 @@ export default function Perfil({ navigation, onLogout }) {
         const dadosAluno = await funcaoPerfil();
 
         if (dadosAluno) {
-          setAlunoLogado(dadosAluno);
-
           const perfilMobile = await getPerfilAluno();
+
+          setAlunoLogado({
+            ...dadosAluno,
+            cursos: perfilMobile?.cursos || [],
+          });
+
           setFotoPerfil(perfilMobile?.foto_perfil_url || null);
         }
       } catch (error) {
@@ -199,9 +203,16 @@ export default function Perfil({ navigation, onLogout }) {
             <View style={styles.circuloIcone}>
               <Ionicons name="school-outline" size={24} color="#000" />
             </View>
+
             <View style={styles.textoCardContainer}>
-              <Text style={styles.labelCard}>Curso</Text>
-              <Text style={styles.valorCard}>{cursoSelecionado?.nome || "Não informado"}</Text>
+              <Text style={styles.labelCard}>Cursos</Text>
+
+              {(alunoLogado?.cursos || []).map((curso) => (
+                <View key={curso.id} style={styles.linhaCurso}>
+                  <Text style={styles.valorCard}>{curso.nome}</Text>
+                  <Text style={styles.statusCurso}>{curso.status}</Text>
+                </View>
+              ))}
             </View>
           </View>
 
@@ -394,5 +405,14 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     marginTop: -25, 
     elevation: 4,
+  },
+  linhaCurso: {
+    marginTop: 6,
+  },
+
+  statusCurso: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
   },
 });
