@@ -19,7 +19,8 @@ import { useCurso } from '../contexts/CursoContext';
 import { colors, radius, spacing } from '../styles/global';
 
 export default function Submissions({ navigation }) {
-  const { cursoSelecionado } = useCurso();
+  const { cursoSelecionado, setCursoSelecionado } = useCurso();
+  const [mostrarCursos, setMostrarCursos] = useState(false);
 
   const cursoId = cursoSelecionado?.id || cursoSelecionado?.id_curso;
 
@@ -87,6 +88,9 @@ export default function Submissions({ navigation }) {
     });
   }, [submissoes, busca, filtro, cursoId]);
 
+  const cursoAtual = cursoSelecionado || dashboardInfo?.curso_atual;
+  const cursos = dashboardInfo?.cursos || [];
+
   return (
     <View style={styles.screen}>
       <AppHeader
@@ -124,10 +128,73 @@ export default function Submissions({ navigation }) {
               />
             </View>
 
-            <TouchableOpacity style={styles.filterButton} activeOpacity={0.8}>
-              <Ionicons name="filter-outline" size={18} color={colors.text} />
-              <Text style={styles.filterText}>Filtrar</Text>
-            </TouchableOpacity>
+            <View style={styles.courseSelector}>
+              <TouchableOpacity style={styles.courseCard}
+                        onPress={() => setMostrarCursos(!mostrarCursos)}
+                        activeOpacity={0.8}
+                      >
+                        <View style={styles.courseIcon}>
+                          <Ionicons name="school-outline" size={26} color={colors.primary} />
+                        </View>
+
+                        <View style={styles.courseInfo}>
+                          <Text style={styles.courseLabel}>Curso atual</Text>
+
+                          <Text style={styles.courseName} numberOfLines={2}>
+                            {cursoAtual?.nome || 'Curso não informado'}
+                          </Text>
+
+                          <View style={styles.changeCourseButton}>
+                            <Ionicons name="swap-horizontal" size={14} color={colors.primary} />
+                            <Text style={styles.changeCourseText}>Trocar de curso</Text>
+                          </View>
+                        </View>
+
+                        <Ionicons
+                          name={mostrarCursos ? 'chevron-up' : 'chevron-down'}
+                          size={22}
+                          color={colors.text}
+                        />
+                      </TouchableOpacity>
+
+              {mostrarCursos && (
+                <View style={styles.courseList}>
+                  {cursos.map((curso) => {
+                    const cursoAtualId = cursoAtual?.id || cursoAtual?.id_curso;
+                    const cursoOpcaoId = curso.id || curso.id_curso;
+                    const selecionado = String(cursoAtualId) === String(cursoOpcaoId);
+
+                    return (
+                      <TouchableOpacity
+                        key={curso.id || curso.id_curso}
+                        style={[
+                          styles.courseOption,
+                          selecionado && styles.courseOptionSelected,
+                        ]}
+                        onPress={() => {
+                          setCursoSelecionado(curso);
+                          setMostrarCursos(false);
+                        }}
+                        activeOpacity={0.8}
+                      >
+                        <Text
+                          style={[
+                            styles.courseOptionText,
+                            selecionado && styles.courseOptionTextSelected,
+                          ]}
+                        >
+                          {curso.nome}
+                        </Text>
+
+                        {selecionado && (
+                          <Ionicons name="checkmark" size={18} color={colors.primary} />
+                        )}
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              )}
+            </View>
           </View>
 
           <View style={styles.tabs}>
@@ -439,7 +506,7 @@ const styles = StyleSheet.create({
 
   searchRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: spacing.md,
   },
 
@@ -466,23 +533,93 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
 
-  filterButton: {
-    width: 106,
-    height: 48,
+  courseSelector: {
+    width: 170,
+  },
+
+  courseCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#bdbdbd',
     borderRadius: radius.md,
     backgroundColor: colors.surface,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
+    minHeight: 48,
+    width: 170,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
   },
 
-  filterText: {
-    fontSize: 15,
+  courseIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#e8f1fb',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.sm,
+  },
+
+  courseInfo: {
+    flex: 1,
+  },
+
+  courseLabel: {
+    fontSize: 10,
+    color: colors.textMuted,
+  },
+
+  courseName: {
+    fontSize: 11,
     fontWeight: '800',
     color: colors.text,
+    marginTop: 2,
+  },
+
+  changeCourseButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+
+  changeCourseText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: colors.primary,
+    marginLeft: 4,
+  },
+  courseList: {
+    width: '100%',
+    marginTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+    paddingTop: spacing.sm,
+  },
+
+  courseOption: {
+    minHeight: 42,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    borderRadius: 8,
+  },
+
+  courseOptionSelected: {
+    backgroundColor: '#e8f1fb',
+  },
+
+  courseOptionText: {
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.text,
+    marginRight: spacing.sm,
+  },
+
+  courseOptionTextSelected: {
+    color: colors.primary,
   },
 
   tabs: {
