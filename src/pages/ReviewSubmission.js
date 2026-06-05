@@ -79,11 +79,7 @@ export default function ReviewSubmission({ route, navigation }) {
         fileName: arquivo?.name || 'certificado.pdf',
         activity: dados.curso || dados.atividade_complementar || '',
         institution: dados.instituicao || '',
-        hours: dados.carga_horaria
-          ? String(dados.carga_horaria)
-          : dados.carga_horaria_solicitada
-            ? String(dados.carga_horaria_solicitada)
-            : '',
+        hours: normalizarHoras(dados.carga_horaria || dados.carga_horaria_solicitada),
         date: dados.data_certificado || '',
       });
     } catch (error) {
@@ -145,6 +141,12 @@ export default function ReviewSubmission({ route, navigation }) {
     );
   }
 
+  function normalizarHoras(valor) {
+    const texto = String(valor || '').replace(',', '.');
+    const match = texto.match(/\d+(\.\d+)?/);
+
+    return match ? match[0] : '';
+  }
   return (
     <KeyboardAvoidingView
       style={styles.screen}
@@ -201,7 +203,7 @@ export default function ReviewSubmission({ route, navigation }) {
           value={submissionData.hours}
           keyboardType="numeric"
           onChangeText={(v) =>
-            setSubmissionData({ ...submissionData, hours: v })
+            setSubmissionData({ ...submissionData, hours: normalizarHoras(v) })
           }
         />
         <Text style={styles.label}>Data</Text>

@@ -28,7 +28,7 @@ export default function SubmissionSummaryCard({
         <InfoItem label="Arquivo" value={fileName} />
         <InfoItem label="Atividade" value={activity} />
         <InfoItem label="Instituição" value={institution} />
-        <InfoItem label="Carga Horária" value={`${hours}h`} />
+        <InfoItem label="Carga Horária" value={String(hours || '-')} />
         <InfoItem label="Data" value={date} />
       </View>
 

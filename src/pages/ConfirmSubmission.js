@@ -145,7 +145,7 @@ export default function ConfirmSubmission({ route, navigation }) {
           fileName={submissionData.fileName}
           activity={tipoAtividadeNome}
           institution={submissionData.institution}
-          hours={submissionData.hours}
+          hours={extrairHoras(submissionData.hours)}
           date={submissionData.date}
         />
 
