@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "acadtime-mobile",
+    "name": "AcadTime",
     "slug": "acadtime-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/logo01.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,17 +17,23 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "package": "com.andersonbem.acadtimemobile"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/logo01.png"
     },
     "plugins": [
       "expo-secure-store",
-      "@react-native-community/datetimepicker"
-    ]
+      "@react-native-community/datetimepicker",
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "0d741142-d327-4971-b021-bfe4c41fd058"
+      }
+    }
   }
 }

@@ -67,7 +67,8 @@ export default function BottomTabBar({ activeRoute = 'Dashboard', onNavigate }) 
 
 const styles = StyleSheet.create({
   container: {
-    height: 64,
+    height: 76,
+    paddingBottom: 12,
     backgroundColor: colors.surface,
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',
@@ -93,6 +94,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
 
-    marginTop: -60,
+    marginTop: -44,
   },
 });

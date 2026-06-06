@@ -175,6 +175,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '700',
     marginBottom: 20,
+    color: colors.text,
   },
 
   error: {
