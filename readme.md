@@ -1,177 +1,233 @@
-README PROVISORIO - ACADTIME MOBILE ALUNO
-=========================================
+# AcadTime Mobile
 
-Este app mobile e focado no aluno.
-A parte web fica na pasta frontend e nao deve ser alterada por este fluxo.
+AcadTime Mobile is the student-facing mobile application of the AcadTime project. It helps students track complementary activity hours, submit certificates, review submission progress, receive notifications, and manage their academic profile from a mobile device.
 
+The application was built with Expo and React Native, and it consumes the AcadTime backend API hosted at `https://acad-time.onrender.com`.
 
-COMO RODAR
-----------
+<details>
+<summary>Ver README em Portugues (PT-BR)</summary>
 
-Na pasta mobile_aluno/acadtime-mobile:
+# AcadTime Mobile
 
-npm install
-npx expo start
+AcadTime Mobile e o aplicativo mobile do projeto AcadTime voltado para alunos. Ele permite que o aluno acompanhe suas horas de atividades complementares, envie certificados, revise o andamento das submissoes, receba notificacoes e gerencie seu perfil academico pelo celular.
 
-Se houver erro de cache:
+O aplicativo foi desenvolvido com Expo e React Native, consumindo a API backend do AcadTime hospedada em `https://acad-time.onrender.com`.
 
-npx expo start -c
+## Principais Recursos
 
+- Login exclusivo para usuarios do tipo aluno.
+- Restauracao de sessao com armazenamento seguro do token.
+- Dashboard com resumo academico e progresso de horas.
+- Troca de curso ativo quando o aluno possui mais de uma matricula.
+- Listagem e detalhamento de submissoes.
+- Envio de certificados em PDF ou imagem.
+- Captura de foto do certificado pela camera.
+- Extracao de dados por OCR.
+- Opcao de preenchimento manual quando a extracao automatica nao for usada.
+- Notificacoes com controle de leitura.
+- Perfil do aluno com atualizacao de foto.
 
-DEPENDENCIAS IMPORTANTES
-------------------------
-
-O app usa:
+## Tecnologias
 
 - Expo SDK 54
-- React Native 0.81.5
+- React 19
+- React Native 0.81
 - React Navigation
-- expo-secure-store
-- @expo/vector-icons
+- Expo Secure Store
+- Expo Document Picker
+- Expo Image Picker
+- Expo Local Authentication
+- Expo Vector Icons
 
-Dependencias de navegacao instaladas:
+## Como Rodar
 
-- @react-navigation/native
-- @react-navigation/native-stack
-- react-native-screens
-- react-native-safe-area-context
+Clone o repositorio, entre na pasta do app mobile e instale as dependencias:
 
-Use npx expo install para pacotes nativos do Expo quando possivel.
+```bash
+cd mobile_aluno/acadtime-mobile
+npm install
+```
 
+Inicie o servidor de desenvolvimento do Expo:
 
-ESTRUTURA PRINCIPAL
--------------------
+```bash
+npx expo start
+```
 
-src/api/
-  Chamadas para o backend.
+Se houver problema de cache, rode:
 
-src/components/
-  Componentes reutilizaveis de UI.
+```bash
+npx expo start -c
+```
 
-src/contexts/
-  Contextos globais, como o curso selecionado.
+Tambem e possivel usar os scripts do projeto:
 
-src/navigation/
-  Configuracao de rotas do app.
+```bash
+npm run android
+npm run ios
+npm run web
+```
 
-src/pages/
-  Telas do app.
+</details>
 
-src/styles/
-  Cores, espacamentos e tokens globais.
+## Features
 
+- Student-only authentication.
+- Session restoration with secure token storage.
+- Dashboard with academic summary and hour progress.
+- Active course selection for students enrolled in more than one course.
+- Submission list and submission detail pages.
+- Certificate upload using PDF or image files.
+- Certificate photo capture with the device camera.
+- OCR data extraction for certificate information.
+- Manual submission flow when automatic extraction is not used.
+- Notifications with read/unread control.
+- Student profile with profile picture update.
 
-API MOBILE
-----------
+## Technologies
 
-Arquivos principais:
+- Expo SDK 54
+- React 19
+- React Native 0.81
+- React Navigation
+- Expo Secure Store
+- Expo Document Picker
+- Expo Image Picker
+- Expo Local Authentication
+- Expo Vector Icons
 
-- src/api/client.js
-  Centraliza fetch, base URL e token JWT.
+## Requirements
 
-- src/api/tokenStorage.js
-  Salva/restaura sessao com expo-secure-store.
+Before running the project, make sure you have:
 
-- src/api/auth.js
-  Login, logout, restauracao de sessao e recuperacao de senha.
+- Node.js installed.
+- npm installed.
+- Expo Go installed on a mobile device, or an Android/iOS emulator configured.
+- Internet access to communicate with the deployed AcadTime API.
 
-- src/api/dashboard.js
-  Dados do Dashboard.
+## Installation
 
-- src/api/perfil.js
-  Perfil e foto do aluno.
+Clone the repository and open the mobile project folder:
 
-- src/api/notificacoes.js
-  Notificacoes e marcar como lida.
+```bash
+cd mobile_aluno/acadtime-mobile
+```
 
-- src/api/submissoes.js
-  Lista, detalhe e criacao de submissoes.
+Install the dependencies:
 
+```bash
+npm install
+```
 
-NAVEGACAO
----------
+## Running the App
 
-A navegacao esta em:
+Start the Expo development server:
 
-src/navigation/Routes.js
+```bash
+npx expo start
+```
 
-Fluxo atual:
+If Expo shows cache-related errors, start it with a clean cache:
 
-- Se existe sessao valida: mostra telas logadas.
-- Se nao existe sessao: mostra Login.
+```bash
+npx expo start -c
+```
 
-Rotas logadas atuais:
+You can also use the available npm scripts:
 
-- Dashboard
-- Submissions
-- NewSubmission
-- Notifications
-- Profile
+```bash
+npm run android
+npm run ios
+npm run web
+```
 
-O BottomTabBar usa estes nomes de rota.
-Se criar uma nova tela principal, registre em Routes.js e atualize o menu se necessario.
+## Project Structure
 
+```text
+acadtime-mobile/
+  assets/              App icons, splash images, and static assets
+  src/
+    api/               Backend API clients and token storage
+    components/        Reusable interface components
+    contexts/          Global React contexts
+    navigation/        Application route configuration
+    pages/             Main application screens
+    styles/            Global colors, spacing, and style tokens
+  App.js               Application entry component
+  app.json             Expo configuration
+  index.js             Expo entry point
+  package.json         Dependencies and scripts
+```
 
-CURSO SELECIONADO
------------------
+## Main Screens
 
-O curso selecionado e global.
-Ele fica em:
+- `Login`: authenticates the student and blocks non-student users.
+- `RecuperarSenha`: starts the password recovery flow.
+- `Dashboard`: shows student information, active course, hour progress, and activity type progress.
+- `Submissions`: lists the student's certificate submissions.
+- `NewSubmission`: lets the student upload or photograph a certificate.
+- `ReviewSubmission`: reviews OCR data or allows manual completion.
+- `ConfirmSubmission`: confirms the submission data before sending it.
+- `SuccessSubmission`: shows the final success feedback after submission.
+- `SubmissionDetails`: displays detailed information about a specific submission.
+- `Notifications`: lists notifications and allows them to be marked as read.
+- `Profile`: shows profile data, updates the profile picture, and handles logout.
 
-src/contexts/CursoContext.js
+## API Integration
 
-Use em uma tela assim:
+The API client is centralized in `src/api/client.js`. It defines the base URL, adds the JSON headers, attaches the JWT access token when available, and handles response parsing.
 
-import { useCurso } from '../contexts/CursoContext';
+Important backend endpoints used by the mobile app include:
 
-const { cursoSelecionado, setCursoSelecionado } = useCurso();
+- `POST /login/`
+- `POST /recuperar-senha/`
+- `GET /aluno/`
+- `GET /inscricao/`
+- `GET /curso/`
+- `GET /tipoAtividade/`
+- `POST /atividadeComplementar/`
+- `GET /mobile/dashboard/`
+- `GET /mobile/dashboard/?curso=ID`
+- `GET /mobile/perfil/`
+- `PATCH /mobile/perfil/foto/`
+- `GET /mobile/notificacoes/`
+- `PATCH /mobile/notificacoes/{id}/marcar-lida/`
+- `POST /mobile/notificacoes/marcar-todas-lidas/`
+- `GET /submissao/`
+- `GET /submissao/{id}/`
+- `POST /submissao/`
+- `GET /submissao/resumo-dashboard/`
+- `GET /submissao/{id}/baixar-certificado/`
+- `POST /ocr/`
 
-Quando o aluno troca o curso no Dashboard, outras telas podem ler o mesmo curso.
+## Authentication and Session
 
+Authentication is handled in `src/api/auth.js`. After a successful login, the app checks whether the authenticated user is a student. If the user type is not `aluno`, access to the mobile app is blocked.
 
-DASHBOARD
----------
+The session token and user data are saved with Expo Secure Store through `src/api/tokenStorage.js`. When the app starts, it attempts to restore the previous session and validates it with the backend.
 
-A tela Dashboard ja consome dados reais do backend.
+## Course Context
 
-Ela usa:
+The selected course is shared across authenticated screens through `src/contexts/CursoContext.js`.
 
-- GET /mobile/dashboard/
-- GET /mobile/dashboard/?curso=ID
+This allows the Dashboard and other pages to read the same active course after the student changes it.
 
-Mostra:
+## Submission Flow
 
-- nome do aluno
-- foto no header
-- curso atual com troca de curso
-- resumo geral
-- progresso de horas
-- progresso por tipo de atividade
+The certificate submission flow supports two paths:
 
+1. Automatic extraction: the student uploads or photographs a certificate, and the app sends it to the OCR endpoint.
+2. Manual completion: the student uploads or photographs a certificate and fills in the activity data manually.
 
-BACKEND
--------
+Both flows send the certificate file and activity information to the backend through `POST /submissao/`.
 
-Endpoints mobile importantes:
+## Development Notes
 
-- POST /login/
-- GET /mobile/dashboard/
-- GET /mobile/perfil/
-- PATCH /mobile/perfil/foto/
-- GET /mobile/notificacoes/
-- PATCH /mobile/notificacoes/{id}/marcar-lida/
-- POST /mobile/notificacoes/marcar-todas-lidas/
-- GET /submissao/
-- GET /submissao/{id}/
-- POST /submissao/
-- POST /ocr/
+- Use `npx expo install` whenever installing Expo-related native packages.
+- Keep the mobile API flow separate from the web frontend when a mobile-specific endpoint already exists.
+- Do not commit temporary automatic login credentials.
+- The app is designed for student users only.
 
+## Academic Context
 
-OBSERVACOES
------------
-
-- O Login visual final pode ser substituido por outro dev.
-- O app bloqueia usuarios que nao sejam aluno no auth.js.
-- O endpoint POST /login-aluno/ ficou como melhoria futura.
-- Evite alterar endpoints usados pela web se um endpoint mobile proprio resolver.
-- Antes de commit, remova qualquer auto login temporario com email/senha no App.js.
+This README was prepared as the official English documentation for the AcadTime Mobile student application, as part of the Integrated Project documentation translation activity.
